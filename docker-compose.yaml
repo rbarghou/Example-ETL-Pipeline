@@ -1,0 +1,35 @@
+version: "3.7"
+services:
+  etl_db:
+    container_name: etl_db
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: "etl_db"
+      MYSQL_USER: "etl"
+      MYSQL_PASSWORD: "asdfasdf"
+      MYSQL_ROOT_PASSWORD: "asdfasdf"
+    volumes:
+      - etl_db:/var/lib/mysql
+
+  etl_app:
+    container_name: etl_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SQL_URL: "mysql+mysqlconnector://etl:asdfasdf@database:3306/etl_db"
+    depends_on:
+      - etl_db
+    links:
+      - "etl_db:database"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./versions:/etl/alembic/versions
+      - ./app:/etl/app
+      - ./tests:/etl/tests
+
+# Names our volume
+volumes:
+  etl_db:
