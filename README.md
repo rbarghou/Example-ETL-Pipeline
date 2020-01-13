@@ -5,10 +5,10 @@ This is an ETL pipeline meant to demonstrate converting from a relational db for
 
 This example uses the concepts of a biological laboratory for it's underlying concepts: Samples, Measurements and Experiments.
 
+## Use Case
 Imagine a Biological Laboratory where scientists conduct experiments which produce samples.  Samples can also be used to create more samples, leading to a tree data structure.  Multiple measurements of these samples can be taken. New experiments are conducted and the samples they produce are being added to the system.  New measurements are being taken which can be novel new measurement types.  The scientists want to conduct analytics on the data but they don't want to have to join the data in their analytics system.  They want to be able to work on a flat single-table schema.
 
-This is where this pipeline is able to help.
-
+## Solution
 This pipeline is able move data from relational tables of `Samples` and `SampleMeasurements` into the dynamically created table of `ExperimentMeasurements`
 
 When this pipeline is run, it _extracts_ data from the `Samples` and `SampleMeasurement` tables and then _transforms_ it into the format used in `ExperimentMeasurements` and then _loads_ it into this table.  It then _enriches_ the data by populating the _root sample_ of every tree of samples.
