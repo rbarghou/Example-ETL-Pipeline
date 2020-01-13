@@ -1,9 +1,32 @@
 # Example-ETL-Pipeline
 
-This is an example of a simple ETL pipeline with some simple testing components.
+## Overview.
+This is an ETL pipeline meant to demonstrate converting from a relational db format to a flat schema while enriching the data.
+
+This example uses the concepts of a biological laboratory for it's underlying concepts: Samples, Measurements and Experiments.
+
+Imagine a Biological Laboratory where scientists conduct experiments which produce samples.  Samples can also be used to create more samples, leading to a tree data structure.  Multiple measurements of these samples can be taken. New experiments are conducted and the samples they produce are being added to the system.  New measurements are being taken which can be novel new measurement types.  The scientists want to conduct analytics on the data but they don't want to have to join the data in their analytics system.  They want to be able to work on a flat single-table schema.
+
+This is where this pipeline is able to help.
+
+This pipeline is able move data from relational tables of `Samples` and `SampleMeasurements` into the dynamically created table of `ExperimentMeasurements`
+
+When this pipeline is run, it _extracts_ data from the `Samples` and `SampleMeasurement` tables and then _transforms_ it into the format used in `ExperimentMeasurements` and then _loads_ it into this table.  It then _enriches_ the data by populating the _root sample_ of every tree of samples.
+
+## Prerequisites
+
+This repository depends on the use of `docker` and `docker-compose`.
+
+Installation instructions can be found here:
+
+- [Docker](https://docs.docker.com/v17.09/engine/installation/)
+- [docker-compose](https://docs.docker.com/compose/install/)
+
+Additionally, the instructions for this demo will assume that you have are
+using a linux-like environment. This was developed on hardware running
+Ubuntu 19.10 and has not been tested in other operating systems.
 
 ## Quickstart
-
 If you just want to run the demo - these are the relevant commands
 
 ```
@@ -29,24 +52,25 @@ mysql> select * from samples limit 20;
 mysql> select * from sample_measurements limit 20;
 mysql> select * from experiment_measurements limit 20;
 ```
+For more detailed instructions skip down to the instructions section
 
-## Introduction
+## Technologies
+* Docker / docker-compose
+* SQLAlchemy / Alembic
+* MySQL
 
-This is an example of using docker and docker-compose in combination with
-sqlalchemy and a MySQL server
+## Important modules
 
-## Prerequisites
+### [./app/schema.py](https://github.com/rbarghou/Example-ETL-Pipeline/blob/master/app/schema.py)
+Contains 3 tables: `Sample`, `SampleMeasurement`, `ExperimentMeasurement`
+The first 2 are static schema, but the 3rd is dynamically generated using SQLAlchemy's `automap_base`
 
-This repository depends on the use of `docker` and `docker-compose`.
+### [./app/etl.py](https://github.com/rbarghou/Example-ETL-Pipeline/blob/master/app/etl.py)
+Contains the actual ETL steps and a description of how to organize them in an Airflow DAG.
 
-Installation instructions can be found here:
+### [./tests/generate.py](https://github.com/rbarghou/Example-ETL-Pipeline/blob/master/tests/generate.py)
+Contains the code for generating test data for the demonstration.
 
-- [Docker](https://docs.docker.com/v17.09/engine/installation/)
-- [docker-compose](https://docs.docker.com/compose/install/)
-
-Additionally, the instructions for this demo will assume that you have are
-using a linux-like environment. This was developed on hardware running
-Ubuntu 19.10 and has not been tested in other operating systems.
 
 ## Instructions
 
